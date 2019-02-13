@@ -1,0 +1,26 @@
+array[int] of int: readings;
+int: start;
+int: n = length(readings);
+
+array[0..n] of var int: temp;
+var int: totalCost = 0;
+
+enum DECISIONS = {heat,strongly_heat,cool,strongly_cool,do_nothing};
+array[DECISIONS] of int: cost = [1,5,3,9,0];
+array[DECISIONS] of int: value = [1,4,2,5,0];
+
+array[1..n] of var DECISIONS: choice;
+
+constraint choice[1] = DECISIONS[3];
+constraint temp[0] = start;
+constraint forall(i in 1..n)(temp[i] = temp[i] - value[choice[i]]);
+constraint forall(i in 1..n)(totalCost = totalCost + cost[choice[i]]);
+constraint forall(i in 1..n)(temp[i] = (temp[i-1]+readings[i]) div 2);
+constraint forall(i in 0..n)(temp[i] <= 30);
+constraint forall(i in 0..n)(temp[i] >= 25);
+
+solve satisfy;
+
+output ["temp = \(temp)\n"];
+output ["choice = \(choice)\n"];
+output ["cost = \(totalCost)\n"];
